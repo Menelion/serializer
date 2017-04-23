@@ -1,0 +1,37 @@
+{
+	"name":         "oire/serializer",
+	"description":  "Data serializer for better storage and exchange.",
+	"keywords": [
+		"serialization",
+		"deserialization",
+		"single-file"
+	],
+	"license":      "MIT",
+	"type":         "library",
+	"authors": [
+		{
+			"name":     "Andre Polykanine also known as Menelion Elensúlë",
+			"homepage": "https://github.com/Oire",
+			"role":     "Developer"
+		}
+	],
+	"support": {
+		"issues":   "https://github.com/Oire/serializer/issues",
+		"source":   "https://github.com/Oire/serializer"
+	},
+	"autoload": {
+		"files": [
+			"src/serializer.php"
+		]
+	},
+	"require": {
+		"php": ">= 7.1",
+		"oire/base64": ">= 1.1"
+	},
+	"require-dev": {
+		"phpunit/phpunit": "^6"
+	},
+	"suggest": {
+		"ext-msgpack": "*"
+	}
+}
