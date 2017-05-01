@@ -8,6 +8,7 @@ php:
 before_install:
 
 - pecl install msgpack
+- pecl install igbinary
 
 install:
 

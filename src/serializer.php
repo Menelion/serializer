@@ -30,13 +30,15 @@ namespace Oire;
  * @package Serializer
 */
 class Serializer {
+	CONST JSON_DEFAULT_DEPTH = 512; // As per PHP manual
+
 	public $allModes; // All available serialization modes
 	public $mode; // Current serialization mode
 	private $jsonErrors; // For JSON handling
 
 	/**
 	 * Class constructor
-	 * @param $mode The serialization mode: 1, "j" or "json" for JSON, 2, "m", "mp" or "msgpack"  for MessagePack. May be null or omitted if you prefer to call setMode() directly
+	 * @param $mode The serialization mode. All available modes are listed in the setMode() description and can be gotten with getAvailableModes(). May be null or omitted if you prefer to call setMode() directly
 	 * @throws \Exception
 	*/
 	public function __construct($mode = null) {
@@ -49,7 +51,8 @@ class Serializer {
 		}
 		$this->allModes = [
 			"json" => 1,
-			"msgpack" => 2
+			"msgpack" => 2,
+			"igbinary" => 3
 		];
 		$this->jsonErrors = [
 			JSON_ERROR_DEPTH => "Maximum stack depth exceeded.",
@@ -66,7 +69,7 @@ class Serializer {
 
 	/**
 	 * Sets the serialization mode.
-	 * @param $mode The serialization mode: 1, "j" or "json" for JSON, 2, "m", "mp" or "msgpack"  for MessagePack
+	 * @param $mode The serialization mode: 1, "j" or "json" for JSON; 2, "m", "mp", "msgpack" or "messagepack" for MessagePack; 3, "i", "ib", "ig" or "igbinary" for Igbinary
 	 * @return $this for chainability
 	 * @throws \InvalidArgumentException
 	*/
@@ -87,6 +90,13 @@ class Serializer {
 			case "msgpack":
 			case "messagepack":
 				$this->mode = $this->allModes['msgpack'];
+			break;
+			case 3:
+			case "i":
+			case "ib":
+			case "ig":
+			case "igbinary":
+				$this->mode = $this->allModes['igbinary'];
 			break;
 			default:
 				throw new \InvalidArgumentException("Unsupported serialization mode.");
@@ -163,7 +173,7 @@ class Serializer {
 			throw new \InvalidArgumentException("The data cannot be empty.");
 			return "";
 		}
-		$decoded = json_decode($data, $assoc, 512, JSON_BIGINT_AS_STRING); // 512 is the default depth, and there is no way to skip it
+		$decoded = json_decode($data, $assoc, self::JSON_DEFAULT_DEPTH, JSON_BIGINT_AS_STRING);
 		if ($decoded === false || $decoded === null) {
 			$error = json_last_error();
 			if (in_array($error, $this->jsonErrors)) {
@@ -179,8 +189,8 @@ class Serializer {
 	/**
 	 * Serializes the given data to a string.
 	 * @param mixed $data The data to be serialized
-	 * @param bool $base64 If set to true, the serialized string is additionally encoded to Base64 (uses Oire Base64). If set to false (default), returns a serialized string according to the serialization mode
-	 * @return string A base64-encoded (uses Oire Base64) string, if $base64 is set to true, just serialized data otherwise. The data are serialized according to the current serialization mode
+	 * @param bool $base64 If set to true, the serialized string is additionally encoded to Base64 (uses Oirë Base64). If set to false (default), returns a serialized string according to the serialization mode
+	 * @return string A base64-encoded (uses Oirë Base64) string, if $base64 is set to true, just serialized data otherwise. The data are serialized according to the current serialization mode
 	 * @throws \InvalidArgumentException If the data is empty
 	 * @throws \Exception
 	*/
@@ -209,6 +219,21 @@ class Serializer {
 					return "";
 				}
 			break;
+			case $this->allModes['igbinary']:
+				if (!function_exists("igbinary_serialize")) {
+					throw new \Exception("Igbinary serialization not available.");
+					return "";
+				}
+				$serialized = igbinary_serialize($data);
+				if ($serialized === false || $serialized === null) {
+					throw new \Exception("Serialization to Igbinary failed.");
+					return "";
+				}
+			break;
+			default:
+				throw new \Exception("Unknown serialization mode.");
+				return "";
+			break;
 		}
 		if ($base64) {
 			try {
@@ -224,7 +249,7 @@ class Serializer {
 	/**
 	 * Unserializes the given data from a string.
 	 * @param string $data The data to be unserialized
-	 * @param bool $base64 If set to true, it is assumed that the data was additionally encoded to base64 using Oire Base64. If set to false (default), unserializes the string according to the serialization mode
+	 * @param bool $base64 If set to true, it is assumed that the data was additionally encoded to base64 using Oirë Base64. If set to false (default), unserializes the string according to the serialization mode
 	 * @param bool $assoc Applies only to JSON serialization. If set to true (default), decodes the JSON string to an associative array. If set to false, an object is returned
 	 * @return mixed The original data
 	 * @throws \InvalidArgumentException If the data is empty or is not a string
@@ -241,7 +266,7 @@ class Serializer {
 			try {
 				$data = \Oire\Base64::decode($data);
 			} catch(\Exception $e) {
-				throw new \Exception("Base64 decoding error.");
+				throw new \Exception("Base64 decoding failed.");
 				return "";
 			}
 		}
@@ -264,6 +289,20 @@ class Serializer {
 					throw new \Exception("Decoding from MessagePack failed.");
 					return "";
 				}
+			break;
+			case $this->allModes['igbinary']:
+				if (!function_exists("igbinary_unserialize")) {
+					throw new \Exception("Igbinary unserialization not available.");
+					return "";
+				}
+				$unserialized = igbinary_unserialize($data);
+				if ($unserialized === false || $unserialized === null) {
+					throw new \Exception("Unserialization from Igbinary failed.");
+					return "";
+				}
+			break;
+			default:
+				throw new \Exception("Unknown serialization mode.");
 			break;
 		}
 		return $unserialized;

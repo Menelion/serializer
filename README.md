@@ -1,19 +1,15 @@
 # Data Serializer for Better Storage and Exchange
 
-[![Build Status](https://travis-ci.org/Oire/colloportus.svg?branch=master)](https://travis-ci.org/Oire/serializer)
+[![Build Status](https://travis-ci.org/Oire/serializer.svg?branch=master)](https://travis-ci.org/Oire/serializer)
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/Oire/serializer/blob/master/LICENSE)
 
 Serializes various data to different formats. There is also a possibility to additionally encode the output to URL-and filename-safe base64.  
-Depends on [Oire Base64](https://github.com/Oire/base64) for encoding binary data to a storable format.
+Depends on [Oirë Base64](https://github.com/Oire/base64) for encoding binary data to a storable format.
 
 ## Requirements
 
 Requires PHP 7.1 or later with JSON support enabled.  
-**Note**: If you want to use MessagePack serialization, the [MsgPack](https://pecl.php.net/package/msgpack) PECL extension is required. If you have PECL available, execute:
-
-```bash
-pecl install msgpack
-```
+Requires additional PECL extensions for certain serialization modes, see below. If no PECL is available and none of the required extensions is installed in your environment (such a shared hosting), you can freely use Oirë Serializer with JSON.
 
 ## Installation
 
@@ -21,7 +17,7 @@ Via [Composer](https://getcomposer.org/):
 
 `composer require oire/serializer`
 
-Or manually. Note that you will need `base64.php` from [Oire Base64](https://github.com/Oire/base64/):
+Or manually. Note that you will need `base64.php` from [Oirë Base64](https://github.com/Oire/base64/):
 
 ```php
 require_once("oire/base64.php");
@@ -81,9 +77,10 @@ haVmcnVpdKZvcmFuZ2WpdmVnZXRhYmxlpmNhcnJvdKVtb25lec0LuKtyYW5kb21BcnJheZUBAgMEBaZM
 
 ## Supported Serialization Modes
 
-Currently the following modes are supported:
-* [JSON](http://json.org/). Pass `1`, `"j"` or `"json"` to `setMode()` to set this mode.
-* [MessagePack](http://msgpack.org/). Pass `2`, `"m"`, `"mp"`, `"msgpack"` or `"messagepack"` to `setMode()` to set this mode. Note that the corresponding [PECL extension](https://pecl.php.net/package/msgpack) should be installed for this to work.
+Currently the following modes are supported. Note, if the mode is binary, a raw binary string is returned if `$base64` parameter is left as `false` during serialization which can be uncomfortable for reading or storage.
+* [JSON](http://json.org/), non-binary. Pass `1`, `"j"` or `"json"` to `setMode()` to set this mode.
+* [MessagePack](http://msgpack.org/), binary. Pass `2`, `"m"`, `"mp"`, `"msgpack"` or `"messagepack"` to `setMode()` to set this mode. Note that the corresponding [PECL extension](https://pecl.php.net/package/msgpack) should be installed for this to work.
+* [Igbinary](https://github.com/igbinary/igbinary), binary. Pass `3`, `"i"`, `"ib"`, `"ig"` or `"igbinary"` to `setMode()` to set this mode. Note that the corresponding [PECL extension](https://pecl.php.net/package/igbinary) should be installed for this to work.
 
 ## Methods
 
@@ -95,7 +92,7 @@ We recommend to wrap every call in `try...catch` since Oirë Serializer throws e
 * `getMode(bool $asString = false): int|string`. Gets the current serialization mode set by `setMode()`. If `$asString` is set to `true`, returns a readable mode name such as `"json"`, a numeric representation is returned otherwise (it is the default behavior). Throws an exception if the mode is not set or if it could not be found.
 * `getAvailableModes(bool $json = false): array|string`. Gets all available serialization modes. If the `$json` parameter is set to `true`, returns them as a JSON string, an associative array is returned otherwise (this is the default behavior).
 * `serialize(mixed $data, bool $base64 = false): string`. Serializes given data according to the serialization mode set with `setMode()`. If `$base64` is set to `true`, additionally encodes the serialized data to URL-and filename-safe base64 (particularly useful for binary serialization formats such as MessagePack). If set to `false` (default), the serialized data is returned as a string, be it binary or not.
-* `unserialize(string $data, bool $base64 = false, bool $assoc = true): mixed`. Unserializes given data according to the serialization mode set with `setMode()`. If `$base64` is set to `true`, assumes that the data had been additionally encoded to URL-safe base64 after serialization. If `$assoc` is set to `true` (default), returns an associative array, an object is returned otherwise. Note that the last parameter is applicable only for JSON serialization.
+* `unserialize(string $data, bool $base64 = false, bool $assoc = true): mixed`. Unserializes given data according to the serialization mode set with `setMode()`. If `$base64` is set to `true`, assumes that the data had been additionally encoded to URL-safe base64 after serialization. If `$assoc` is set to `true` (default), returns an associative array, an object is returned otherwise. Note that the last parameter is applicable only to JSON serialization.
 
 ## License
 Copyright © 2017, Andre Polykanine also known as Menelion Elensúlë.  
