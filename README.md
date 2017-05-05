@@ -1,4 +1,4 @@
-# Data Serializer for Better Storage and Exchange
+# Oiré Serializer — Data Serializer for Better Storage and Exchange
 
 [![Build Status](https://travis-ci.org/Oire/serializer.svg?branch=master)](https://travis-ci.org/Oire/serializer)
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/Oire/serializer/blob/master/LICENSE)
@@ -87,12 +87,12 @@ Currently the following modes are supported. Note, if the mode is binary, a raw 
 The methods are documented in the source file, but their description is given below.  
 We recommend to wrap every call in `try...catch` since Oirë Serializer throws exceptions in case of errors.
 
-* Class constructor. You might provide a serialization mode when calling the constructor or directly call `setMode()`.
-* `setMode(int|string $mode)`. Accepts either a numeric representation of the mode or a readable string such as `"json"`. See the Supported Modes section above. Chainable, so returns the current class instance.
-* `getMode(bool $asString = false): int|string`. Gets the current serialization mode set by `setMode()`. If `$asString` is set to `true`, returns a readable mode name such as `"json"`, a numeric representation is returned otherwise (it is the default behavior). Throws an exception if the mode is not set or if it could not be found.
-* `getAvailableModes(bool $json = false): array|string`. Gets all available serialization modes. If the `$json` parameter is set to `true`, returns them as a JSON string, an associative array is returned otherwise (this is the default behavior).
-* `serialize(mixed $data, bool $base64 = false): string`. Serializes given data according to the serialization mode set with `setMode()`. If `$base64` is set to `true`, additionally encodes the serialized data to URL-and filename-safe base64 (particularly useful for binary serialization formats such as MessagePack). If set to `false` (default), the serialized data is returned as a string, be it binary or not.
-* `unserialize(string $data, bool $base64 = false, bool $assoc = true): mixed`. Unserializes given data according to the serialization mode set with `setMode()`. If `$base64` is set to `true`, assumes that the data had been additionally encoded to URL-safe base64 after serialization. If `$assoc` is set to `true` (default), returns an associative array, an object is returned otherwise. Note that the last parameter is applicable only to JSON serialization.
+* Class constructor— you might provide a serialization mode when calling the constructor or directly call `setMode()`.
+* `setMode(int|string $mode)` — accepts either a numeric representation of the mode or a readable string such as `"json"`. See the Supported Modes section above. Chainable, so returns the current class instance.
+* `getMode(bool $asString = false): int|string` — gets the current serialization mode set by `setMode()`. If `$asString` is set to `true`, returns a readable mode name such as `"json"`, a numeric representation is returned otherwise (it is the default behavior). Throws an exception if the mode is not set or if it could not be found.
+* `getAvailableModes(bool $json = false): array|string` — gets all available serialization modes. If the `$json` parameter is set to `true`, returns them as a JSON string, an associative array is returned otherwise (this is the default behavior).
+* `serialize(mixed $data, bool $base64 = false): string` — serializes given data according to the serialization mode set with `setMode()`. If `$base64` is set to `true`, additionally encodes the serialized data to URL-and filename-safe base64 (particularly useful for binary serialization formats such as MessagePack). If set to `false` (default), the serialized data is returned as a string, be it binary or not.
+* `unserialize(string $data, bool $base64 = false, bool $assoc = true): mixed` — unserializes given data according to the serialization mode set with `setMode()`. If `$base64` is set to `true`, assumes that the data had been additionally encoded to URL-safe base64 after serialization. If `$assoc` is set to `true` (default), returns an associative array, an object is returned otherwise. Note that the last parameter is applicable only to JSON serialization.
 
 ## License
 Copyright © 2017, Andre Polykanine also known as Menelion Elensúlë.  
